@@ -18,7 +18,7 @@ package com.piratecats.torrent_search.adapters.tpb;
 
 import com.piratecats.torrent_search.model.category.Category;
 
-class CategoryMapper {
+final class CategoryMapper {
     static Category getByNum(int categoryInt) {
         switch (categoryInt) {
             case 100: return Category.AUDIO;
@@ -79,5 +79,8 @@ class CategoryMapper {
 
             default: return Category.ALL;
         }
+    }
+
+    private CategoryMapper() {
     }
 }

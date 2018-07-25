@@ -18,7 +18,7 @@ package com.piratecats.torrent_search.adapters.rarbg;
 
 import com.piratecats.torrent_search.model.category.Category;
 
-class CategoryMapper {
+final class CategoryMapper {
     static Category getByName(String category) {
         switch (category) {
             case "XXX (18+)": return Category.PORN;
@@ -46,5 +46,8 @@ class CategoryMapper {
 
             default: return Category.ALL;
         }
+    }
+
+    private CategoryMapper() {
     }
 }

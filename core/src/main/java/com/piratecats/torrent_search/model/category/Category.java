@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Category {
+public final class Category {
     public static final Category ALL = Category.of("All");
 
     public static final Category AUDIO = Category.of("Audio");
