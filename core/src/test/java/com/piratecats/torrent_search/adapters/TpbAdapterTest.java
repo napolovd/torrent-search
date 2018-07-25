@@ -23,14 +23,14 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 public class TpbAdapterTest {
 
     @Test
     public void test1() throws IOException {
         final TpbAdapter tpbAdapter = new TpbAdapter();
-        final Collection<SearchResult> searchResults = tpbAdapter.search("Waterworld 1995");
+        final Collection<SearchResult> searchResults = tpbAdapter.search("Waterworld 1995", (r) -> System.out.println("result = " + r));
         assertFalse(searchResults.isEmpty());
     }
 

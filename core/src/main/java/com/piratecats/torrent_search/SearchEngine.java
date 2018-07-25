@@ -17,17 +17,20 @@
 package com.piratecats.torrent_search;
 
 import com.google.common.collect.ImmutableList;
-import com.piratecats.torrent_search.adapters.rarbg.RarbgAdapter;
+import com.piratecats.torrent_search.adapters.An1337x.An1337xAdapter;
 import com.piratecats.torrent_search.adapters.SearchAdapter;
+import com.piratecats.torrent_search.adapters.rarbg.RarbgAdapter;
 import com.piratecats.torrent_search.adapters.tpb.TpbAdapter;
 import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class SearchEngine {
     private final Collection<SearchAdapter> adapters;
@@ -37,21 +40,25 @@ public class SearchEngine {
         adapters = ImmutableList.of(
                 new RarbgAdapter()
                 , new TpbAdapter()
+                , new An1337xAdapter()
         );
 
         requestExecutor = Executors.newCachedThreadPool();
     }
 
-    public CompletableFuture<?> search(String searchString, ResultCallback callback) {
-        return CompletableFuture.allOf(
-                adapters.stream().map(searchAdapter -> CompletableFuture.runAsync(() -> {
-                    try {
-                        final Collection<SearchResult> searchResults = searchAdapter.search(searchString);
-                        callback.apply(searchResults);
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }, requestExecutor)).toArray(size -> new CompletableFuture[size])
+    public Future<Collection<SearchResult>> search(String searchString, @Nullable ResultCallback callback) {
+        return requestExecutor.submit(() ->
+                adapters.stream()
+                        .map(adapter -> {
+                            try {
+                                return adapter.search(searchString, callback);
+                            } catch (IOException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            return ImmutableList.<SearchResult>of();
+                        })
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList())
         );
     }
 

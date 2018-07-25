@@ -16,12 +16,13 @@
 
 package com.piratecats.torrent_search.adapters;
 
+import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.concurrent.Future;
 
 public interface SearchAdapter {
-    Collection<SearchResult> search(String searchString) throws IOException, InterruptedException;
+    Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException, InterruptedException;
 }

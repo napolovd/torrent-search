@@ -19,12 +19,14 @@ package com.piratecats.torrent_search.adapters.rarbg;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.piratecats.torrent_search.adapters.SearchAdapter;
+import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +48,7 @@ public class RarbgAdapter implements SearchAdapter {
     private HttpUrl url = HttpUrl.parse("https://torrentapi.org/pubapi_v2.php");
 
     @Override
-    public Collection<SearchResult> search(String searchString) throws IOException, InterruptedException {
+    public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException, InterruptedException {
         OkHttpClient client = new OkHttpClient();
         final Gson gson = new Gson();
         String token = getToken(gson, client);
@@ -68,9 +70,15 @@ public class RarbgAdapter implements SearchAdapter {
                 }
                 final String string = response.body().string();
                 SearchResponse searchResponse = gson.fromJson(string, SearchResponse.class);
-                return convert(searchResponse);
+                final Collection<SearchResult> searchResults = convert(searchResponse);
+
+                if (callback != null) {
+                    searchResults.forEach(callback::apply);
+                }
+
+                return searchResults;
             } finally {
-                System.out.println("Sleeping for 1010ms");
+                System.out.println("Sleeping for 1010ms"); // RARBG has limit to one request per second
                 Thread.sleep(1010);
             }
         }

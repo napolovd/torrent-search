@@ -16,14 +16,14 @@
 
 package com.piratecats.torrent_search;
 
+import com.piratecats.torrent_search.model.SearchResult;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.*;
+import java.util.concurrent.Future;
 
 public class SearchEngineTest {
 
@@ -42,7 +42,7 @@ public class SearchEngineTest {
 
     @Test
     public void search() throws ExecutionException, InterruptedException {
-        final CompletableFuture<?> search = engine.search("How i met", results -> System.out.println("results = " + results));
+        final Future<Collection<SearchResult>> search = engine.search("How i met", results -> System.out.println("results = " + results));
 
         search.get();
     }

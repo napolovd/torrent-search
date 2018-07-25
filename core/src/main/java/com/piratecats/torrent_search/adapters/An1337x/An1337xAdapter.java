@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -36,7 +37,7 @@ public class An1337xAdapter implements SearchAdapter {
     private static final String ROOT = "http://1337x.to";
 
     @Override
-    public Collection<SearchResult> search(String searchString, ResultCallback callback) throws IOException {
+    public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException {
         final int page = 1;
         final String url = ROOT + "/search/" + searchString + "/" + page + "/";
 
@@ -66,7 +67,9 @@ public class An1337xAdapter implements SearchAdapter {
 
             final SearchResult searchResult = SearchResult.of(name, ImmutableList.of(), "1337x", trackerUrl, magnet, size, tryParse(seeders), tryParse(leechers));
 
-            callback.apply(searchResult);
+            if (callback != null) {
+                callback.apply(searchResult);
+            }
             results.add(searchResult);
         }
 

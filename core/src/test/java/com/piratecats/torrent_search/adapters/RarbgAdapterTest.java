@@ -27,11 +27,11 @@ public class RarbgAdapterTest {
     @Test
     public void test() throws IOException, InterruptedException {
         final RarbgAdapter rarbgAdapter = new RarbgAdapter();
-        final Collection<SearchResult> howIMetYourMother = rarbgAdapter.search("how i met your mother s05");
+        final Collection<SearchResult> howIMetYourMother = rarbgAdapter.search("how i met your mother s05", (r) -> System.out.println("result = " + r));
         for (SearchResult searchResult : howIMetYourMother) {
             System.out.println("searchResult = " + searchResult);
         }
-        final Collection<SearchResult> howIMetYourMother2 = rarbgAdapter.search("how i met your mother s06");
+        final Collection<SearchResult> howIMetYourMother2 = rarbgAdapter.search("how i met your mother s06", (r) -> System.out.println("result = " + r));
         for (SearchResult searchResult : howIMetYourMother2) {
             System.out.println("searchResult = " + searchResult);
         }

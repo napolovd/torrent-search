@@ -19,6 +19,7 @@ package com.piratecats.torrent_search.adapters.tpb;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.piratecats.torrent_search.adapters.SearchAdapter;
+import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 import com.piratecats.torrent_search.model.category.Category;
 import org.jsoup.Jsoup;
@@ -26,16 +27,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 public class TpbAdapter implements SearchAdapter {
-    private String root = "https://thepiratebay.org";
+    private static final String ROOT = "https://thepiratebay.org";
 
     @Override
-    public Collection<SearchResult> search(String searchString) throws IOException {
+    public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException {
 
-        final String url = root + "/search/" + searchString + "/0/99/0";
+        final String url = ROOT + "/search/" + searchString + "/0/99/0";
 
         Document doc = Jsoup.connect(url).get();
 
@@ -49,7 +54,7 @@ public class TpbAdapter implements SearchAdapter {
             final Set<Category> categories = collectCategories(categoriesElements);
 
             final Elements titleReference = element.select("div.detname a.detlink");
-            final String trackerUrl = root + titleReference.attr("href");
+            final String trackerUrl = ROOT + titleReference.attr("href");
             final String name = titleReference.text();
 
             final String magnet = element.select("a[href^=magnet:?xt]").attr("href");
@@ -61,7 +66,13 @@ public class TpbAdapter implements SearchAdapter {
 
             long size = getSizeFromDescription(description);
 
-            results.add(SearchResult.of(name, categories, "TPB", trackerUrl, magnet, size, tryParse(seeders), tryParse(leechers)));
+            final SearchResult searchResult = SearchResult.of(name, categories, "TPB", trackerUrl, magnet, size, tryParse(seeders), tryParse(leechers));
+
+            if (callback != null) {
+                callback.apply(searchResult);
+            }
+
+            results.add(searchResult);
         }
 
         return results.build();
@@ -104,9 +115,7 @@ public class TpbAdapter implements SearchAdapter {
                     case "TiB":
                         size = (long) (sizeDouble * 1000000000000L);
                         break;
-
                 }
-
             }
         }
         return size;
