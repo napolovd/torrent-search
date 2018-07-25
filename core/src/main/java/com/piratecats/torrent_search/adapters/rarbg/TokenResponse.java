@@ -16,9 +16,14 @@
 
 package com.piratecats.torrent_search.adapters.rarbg;
 
-import lombok.Data;
-
-@Data
-class TokenResponse {
+final class TokenResponse {
     private final String token;
+
+    public TokenResponse(String token) {
+        this.token = token;
+    }
+
+    String getToken() {
+        return token;
+    }
 }

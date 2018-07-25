@@ -17,7 +17,6 @@
 package com.piratecats.torrent_search.adapters.rarbg;
 
 import com.google.gson.annotations.SerializedName;
-import lombok.Data;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,7 +35,6 @@ public class SearchResponse {
         return torrentResults;
     }
 
-    @Data
     static class TorrentResult {
         @SerializedName("title")
         private final String title;
@@ -52,5 +50,43 @@ public class SearchResponse {
         private final long size;
         @SerializedName("info_page")
         private final String page;
+
+        public TorrentResult(String title, String category, String magnet, int seeders, int leechers, long size, String page) {
+            this.title = title;
+            this.category = category;
+            this.magnet = magnet;
+            this.seeders = seeders;
+            this.leechers = leechers;
+            this.size = size;
+            this.page = page;
+        }
+
+        String getTitle() {
+            return title;
+        }
+
+        String getCategory() {
+            return category;
+        }
+
+        String getMagnet() {
+            return magnet;
+        }
+
+        int getSeeders() {
+            return seeders;
+        }
+
+        int getLeechers() {
+            return leechers;
+        }
+
+        long getSize() {
+            return size;
+        }
+
+        String getPage() {
+            return page;
+        }
     }
 }

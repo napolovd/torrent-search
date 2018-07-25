@@ -17,12 +17,10 @@
 package com.piratecats.torrent_search.model;
 
 import com.piratecats.torrent_search.model.category.Category;
-import lombok.Data;
 
 import java.util.Collection;
 
-@Data(staticConstructor="of")
-public class SearchResult {
+public final class SearchResult {
     private final String name;
     private final Collection<Category> categories;
     private final String trackerName;
@@ -31,4 +29,33 @@ public class SearchResult {
     private final long size;
     private final int seeders;
     private final int leechers;
+
+    private SearchResult(String name, Collection<Category> categories, String trackerName, String trackerUrl, String magnetUrl, long size, int seeders, int leechers) {
+        this.name = name;
+        this.categories = categories;
+        this.trackerName = trackerName;
+        this.trackerUrl = trackerUrl;
+        this.magnetUrl = magnetUrl;
+        this.size = size;
+        this.seeders = seeders;
+        this.leechers = leechers;
+    }
+
+    public static SearchResult of(String name, Collection<Category> categories, String trackerName, String trackerUrl, String magnetUrl, long size, int seeders, int leechers) {
+        return new SearchResult(name, categories, trackerName, trackerUrl, magnetUrl, size, seeders, leechers);
+    }
+
+    @Override
+    public String toString() {
+        return "SearchResult{" +
+                "name='" + name + '\'' +
+                ", categories=" + categories +
+                ", trackerName='" + trackerName + '\'' +
+                ", trackerUrl='" + trackerUrl + '\'' +
+                ", magnetUrl='" + magnetUrl + '\'' +
+                ", size=" + size +
+                ", seeders=" + seeders +
+                ", leechers=" + leechers +
+                '}';
+    }
 }

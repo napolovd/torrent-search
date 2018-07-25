@@ -15,7 +15,6 @@
  */
 
 plugins {
-    id 'io.franzbecker.gradle-lombok' version '1.11'
     id 'java'
 }
 
@@ -23,15 +22,13 @@ group 'com.piratecats'
 version '0.1-SNAPSHOT'
 
 apply plugin: 'java'
-
-sourceCompatibility = 1.8
+apply plugin: 'maven'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:1.16.20"
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
