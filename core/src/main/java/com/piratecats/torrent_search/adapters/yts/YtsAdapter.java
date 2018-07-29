@@ -71,12 +71,13 @@ public class YtsAdapter implements SearchAdapter {
                 for (SearchResponse.Movie movie : searchResponse.getData().getMovies()) {
                     if (movie.getTorrents() != null) {
                         for (SearchResponse.Torrent torrent : movie.getTorrents()) {
+                            final String name = movie.getTitle() + " " + torrent.getCategory();
                             builder.add(SearchResult.of(
-                                    movie.getTitle() + " " + torrent.getCategory()
+                                    name
                                     , ImmutableList.of(CategoryMapper.getByName(torrent.getCategory()))
                                     , "YTS"
                                     , movie.getUrl()
-                                    , createMagnet(torrent.getHash())
+                                    , createMagnet(name, torrent.getHash())
                                     , torrent.getSize()
                                     , torrent.getSeeds()
                                     , torrent.getPeers()
@@ -91,10 +92,10 @@ public class YtsAdapter implements SearchAdapter {
         return builder.build();
     }
 
-    private String createMagnet(String hash) {
-        final String template = "magnet:?xt=urn:btih:%s&dn=Url+Encoded+Movie+Name";
+    private String createMagnet(String name, String hash) {
+        final String template = "magnet:?xt=urn:btih:%s&dn=%s";
 
-        return String.format(template, hash) +
+        return String.format(template, hash, name) +
                 "&tr=udp://open.demonii.com:1337/announce" +
                 "&tr=udp://tracker.openbittorrent.com:80" +
                 "&tr=udp://tracker.coppersurfer.tk:6969" +
