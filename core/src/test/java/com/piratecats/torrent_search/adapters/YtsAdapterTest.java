@@ -14,40 +14,25 @@
  * limitations under the License.
  */
 
-package com.piratecats.torrent_search;
+package com.piratecats.torrent_search.adapters;
 
+import com.piratecats.torrent_search.adapters.yts.YtsAdapter;
 import com.piratecats.torrent_search.model.SearchResult;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertFalse;
 
-public class SearchEngineTest {
-
-    private SearchEngine engine;
-
-    @Before
-    public void before() {
-        engine = new SearchEngine();
-    }
-
-    @After
-    public void after() {
-        engine.shutdown();
-        engine = null;
-    }
-
+public class YtsAdapterTest {
     @Test
-    public void search() throws ExecutionException, InterruptedException {
-        final Future<Collection<SearchResult>> search = engine.search("blade runner", System.out::println);
-
-        final Collection<SearchResult> searchResults = search.get();
-
+    public void test() throws IOException {
+        final YtsAdapter ytsAdapter = new YtsAdapter();
+        final Collection<SearchResult> searchResults = ytsAdapter.search("blade runner", (r) -> System.out.println("result = " + r));
+        for (SearchResult searchResult : searchResults) {
+            System.out.println("searchResult = " + searchResult);
+        }
         assertFalse(searchResults.isEmpty());
     }
 }

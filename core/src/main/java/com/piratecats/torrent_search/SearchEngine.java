@@ -21,6 +21,7 @@ import com.piratecats.torrent_search.adapters.An1337x.An1337xAdapter;
 import com.piratecats.torrent_search.adapters.SearchAdapter;
 import com.piratecats.torrent_search.adapters.rarbg.RarbgAdapter;
 import com.piratecats.torrent_search.adapters.tpb.TpbAdapter;
+import com.piratecats.torrent_search.adapters.yts.YtsAdapter;
 import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 
@@ -41,6 +42,7 @@ public class SearchEngine {
                 new RarbgAdapter()
                 , new TpbAdapter()
                 , new An1337xAdapter()
+                , new YtsAdapter()
         );
 
         requestExecutor = Executors.newCachedThreadPool();
@@ -48,7 +50,7 @@ public class SearchEngine {
 
     public Future<Collection<SearchResult>> search(String searchString, @Nullable ResultCallback callback) {
         return requestExecutor.submit(() ->
-                adapters.stream()
+                adapters.parallelStream()
                         .map(adapter -> {
                             try {
                                 return adapter.search(searchString, callback);
