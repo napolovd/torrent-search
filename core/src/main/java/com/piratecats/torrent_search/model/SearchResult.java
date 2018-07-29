@@ -45,6 +45,38 @@ public final class SearchResult {
         return new SearchResult(name, categories, trackerName, trackerUrl, magnetUrl, size, seeders, leechers);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Collection<Category> getCategories() {
+        return categories;
+    }
+
+    public String getTrackerName() {
+        return trackerName;
+    }
+
+    public String getTrackerUrl() {
+        return trackerUrl;
+    }
+
+    public String getMagnetUrl() {
+        return magnetUrl;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public int getSeeders() {
+        return seeders;
+    }
+
+    public int getLeechers() {
+        return leechers;
+    }
+
     @Override
     public String toString() {
         return "SearchResult{" +

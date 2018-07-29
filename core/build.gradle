@@ -18,7 +18,7 @@ plugins {
     id 'java'
 }
 
-group 'com.piratecats'
+group 'com.piratecats.torrent-search'
 version '0.1-SNAPSHOT'
 
 apply plugin: 'java'
