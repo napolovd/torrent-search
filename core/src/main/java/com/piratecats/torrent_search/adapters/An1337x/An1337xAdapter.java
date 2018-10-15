@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.piratecats.torrent_search.adapters.SearchAdapter;
 import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
+import com.piratecats.torrent_search.model.category.Category;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +35,7 @@ import static com.google.common.primitives.Ints.tryParse;
 public class An1337xAdapter implements SearchAdapter {
     private static final int KILO_1000 = 1000;
     private static final int KILO_1024 = 1024;
-    private static final String ROOT = "http://1337x.to";
+    private static final String ROOT = "https://1337x.to";
 
     @Override
     public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException {
@@ -65,7 +66,7 @@ public class An1337xAdapter implements SearchAdapter {
 
             long size = getSize(sizeText);
 
-            final SearchResult searchResult = SearchResult.of(name, ImmutableList.of(), "1337x", trackerUrl, magnet, size, tryParse(seeders), tryParse(leechers));
+            final SearchResult searchResult = SearchResult.of(name, ImmutableList.<Category>of(), "1337x", trackerUrl, magnet, size, tryParse(seeders), tryParse(leechers));
 
             if (callback != null) {
                 callback.apply(searchResult);

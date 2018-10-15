@@ -27,11 +27,11 @@ import com.piratecats.torrent_search.model.SearchResult;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class SearchEngine {
     private final Collection<SearchAdapter> adapters;
@@ -48,20 +48,56 @@ public class SearchEngine {
         requestExecutor = Executors.newCachedThreadPool();
     }
 
-    public Future<Collection<SearchResult>> search(String searchString, @Nullable ResultCallback callback) {
-        return requestExecutor.submit(() ->
-                adapters.parallelStream()
-                        .map(adapter -> {
-                            try {
-                                return adapter.search(searchString, callback);
-                            } catch (IOException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            return ImmutableList.<SearchResult>of();
-                        })
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList())
-        );
+    public Future<Collection<SearchResult>> search(final String searchString, @Nullable final ResultCallback callback) {
+        return requestExecutor.submit(new Callable<Collection<SearchResult>>() {
+            @Override
+            public Collection<SearchResult> call() {
+                List<SearchResult> searchResultList = new ArrayList<>();
+                try {
+                    List<Callable<Collection<SearchResult>>> callables = createCallables(searchString, callback);
+
+                    List<Future<Collection<SearchResult>>> futures = executeCallables(callables);
+
+                    for (Future<Collection<SearchResult>> future : futures) {
+                        try {
+                            Collection<SearchResult> searchResults = future.get();
+                            searchResultList.addAll(searchResults);
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return searchResultList;
+            }
+        });
+    }
+
+    private List<Future<Collection<SearchResult>>> executeCallables(List<Callable<Collection<SearchResult>>> callables) {
+        List<Future<Collection<SearchResult>>> result = new ArrayList<>(callables.size());
+        for (Callable<Collection<SearchResult>> callable : callables) {
+            result.add(requestExecutor.submit(callable));
+        }
+        return result;
+    }
+
+    private List<Callable<Collection<SearchResult>>> createCallables(final String searchString, final ResultCallback callback) {
+        List<Callable<Collection<SearchResult>>> result = new ArrayList<>(adapters.size());
+        for (final SearchAdapter adapter : adapters) {
+            result.add(new Callable<Collection<SearchResult>>() {
+                @Override
+                public Collection<SearchResult> call() {
+                    try {
+                        return adapter.search(searchString, callback);
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return Collections.emptyList();
+                }
+            });
+        }
+        return result;
     }
 
     public void shutdown() {

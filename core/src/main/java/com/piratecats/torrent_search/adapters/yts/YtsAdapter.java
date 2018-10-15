@@ -33,7 +33,7 @@ import java.util.Collection;
 public class YtsAdapter implements SearchAdapter {
     private static final String QUERY_TERM = "query_term";
 
-    private HttpUrl url = HttpUrl.parse("https://yts.am/api/v2/list_movies.json");
+    private final HttpUrl url = HttpUrl.parse("https://yts.am/api/v2/list_movies.json");
 
     @Override
     public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException {
@@ -55,7 +55,9 @@ public class YtsAdapter implements SearchAdapter {
             final Collection<SearchResult> searchResults = convert(searchResponse);
 
             if (callback != null) {
-                searchResults.forEach(callback::apply);
+                for (SearchResult searchResult : searchResults) {
+                    callback.apply(searchResult);
+                }
             }
 
             return searchResults;

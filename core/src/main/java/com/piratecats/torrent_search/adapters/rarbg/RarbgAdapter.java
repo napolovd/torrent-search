@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class RarbgAdapter implements SearchAdapter {
     private static final String APP_ID_VALUE = "cattorrent_dev";
@@ -44,8 +43,8 @@ public class RarbgAdapter implements SearchAdapter {
     private static final String SEARCH = "search";
     private static final String GET_TOKEN = "get_token";
 
-    private Token token = new Token();
-    private HttpUrl url = HttpUrl.parse("https://torrentapi.org/pubapi_v2.php");
+    private final Token token = new Token();
+    private final HttpUrl url = HttpUrl.parse("https://torrentapi.org/pubapi_v2.php");
 
     @Override
     public Collection<SearchResult> search(String searchString, @Nullable ResultCallback callback) throws IOException, InterruptedException {
@@ -73,7 +72,9 @@ public class RarbgAdapter implements SearchAdapter {
                 final Collection<SearchResult> searchResults = convert(searchResponse);
 
                 if (callback != null) {
-                    searchResults.forEach(callback::apply);
+                    for (SearchResult searchResult : searchResults) {
+                        callback.apply(searchResult);
+                    }
                 }
 
                 return searchResults;
@@ -120,20 +121,23 @@ public class RarbgAdapter implements SearchAdapter {
         if (torrentResults == null) {
             return ImmutableList.of();
         }
-        return torrentResults
-                .stream()
-                .map(torrentResult -> SearchResult.of(
-                        torrentResult.getTitle()
-                        , ImmutableList.of(CategoryMapper.getByName(torrentResult.getCategory()))
-                        , "RARBG"
-                        , torrentResult.getPage()
-                        , torrentResult.getMagnet()
-                        , torrentResult.getSize()
-                        , torrentResult.getSeeders()
-                        , torrentResult.getLeechers()
-                        )
-                )
-                .collect(Collectors.toList());
+
+        ImmutableList.Builder<SearchResult> builder = ImmutableList.builder();
+
+        for (SearchResponse.TorrentResult torrentResult : torrentResults) {
+            builder.add(SearchResult.of(
+                    torrentResult.getTitle()
+                    , ImmutableList.of(CategoryMapper.getByName(torrentResult.getCategory()))
+                    , "RARBG"
+                    , torrentResult.getPage()
+                    , torrentResult.getMagnet()
+                    , torrentResult.getSize()
+                    , torrentResult.getSeeders()
+                    , torrentResult.getLeechers()
+            ));
+        }
+
+        return builder.build();
     }
 
     private static class Token {

@@ -115,7 +115,7 @@ public final class Category {
 
     @Nonnull
     public Collection<Category> getSubCategories() {
-        return subCategories != null ? subCategories : ImmutableList.of();
+        return subCategories != null ? subCategories : ImmutableList.<Category>of();
     }
 
     @Override

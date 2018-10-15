@@ -16,6 +16,7 @@
 
 package com.piratecats.torrent_search;
 
+import com.piratecats.torrent_search.model.ResultCallback;
 import com.piratecats.torrent_search.model.SearchResult;
 import org.junit.After;
 import org.junit.Before;
@@ -44,8 +45,12 @@ public class SearchEngineTest {
 
     @Test
     public void search() throws ExecutionException, InterruptedException {
-        final Future<Collection<SearchResult>> search = engine.search("blade runner", System.out::println);
-
+        final Future<Collection<SearchResult>> search = engine.search("hardcore", new ResultCallback() {
+            @Override
+            public void apply(SearchResult result) {
+                System.out.println(result);
+            }
+        });
         final Collection<SearchResult> searchResults = search.get();
 
         assertFalse(searchResults.isEmpty());
